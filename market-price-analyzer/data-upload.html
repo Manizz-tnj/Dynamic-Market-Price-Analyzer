@@ -1,0 +1,673 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Data Upload Center - Market Price Analyzer</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .upload-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background: var(--bg-primary);
+            min-height: 100vh;
+        }
+
+        .upload-header {
+            text-align: center;
+            margin-bottom: 30px;
+            color: var(--text-primary);
+        }
+
+        .upload-section {
+            background: var(--bg-secondary);
+            padding: 25px;
+            border-radius: var(--radius-lg);
+            margin-bottom: 25px;
+            border: 1px solid var(--border-primary);
+        }
+
+        .upload-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 25px;
+        }
+
+        .file-upload-area {
+            border: 2px dashed var(--accent-green);
+            border-radius: var(--radius-md);
+            padding: 30px;
+            text-align: center;
+            transition: all 0.3s;
+            cursor: pointer;
+            background: var(--bg-tertiary);
+        }
+
+        .file-upload-area:hover {
+            border-color: var(--accent-green-dark);
+            background: var(--bg-primary);
+        }
+
+        .file-upload-area.dragover {
+            border-color: var(--accent-green-dark);
+            background: var(--bg-primary);
+            transform: scale(1.02);
+        }
+
+        .upload-button {
+            background: var(--accent-green);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            margin: 5px;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+
+        .upload-button:hover {
+            background: var(--accent-green-dark);
+            transform: translateY(-2px);
+        }
+
+        .upload-button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 20px;
+            background: var(--bg-tertiary);
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 10px 0;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--accent-green), var(--accent-sky-blue));
+            width: 0%;
+            transition: width 0.3s;
+        }
+
+        .upload-log {
+            background: var(--bg-tertiary);
+            padding: 15px;
+            border-radius: var(--radius-md);
+            margin: 15px 0;
+            font-family: monospace;
+            font-size: 13px;
+            color: var(--text-primary);
+            border: 1px solid var(--border-primary);
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .data-format-example {
+            background: var(--bg-tertiary);
+            padding: 15px;
+            border-radius: var(--radius-md);
+            margin: 10px 0;
+            font-family: monospace;
+            font-size: 12px;
+            border-left: 4px solid var(--accent-green);
+        }
+
+        .info-box {
+            background: linear-gradient(135deg, var(--accent-green), var(--accent-sky-blue));
+            color: white;
+            padding: 20px;
+            border-radius: var(--radius-md);
+            margin: 15px 0;
+        }
+
+        .sample-download {
+            background: var(--accent-yellow);
+            color: var(--text-primary);
+            padding: 10px 15px;
+            border-radius: var(--radius-md);
+            text-decoration: none;
+            display: inline-block;
+            margin: 5px;
+            transition: all 0.3s;
+        }
+
+        .sample-download:hover {
+            background: var(--accent-orange);
+            transform: translateY(-2px);
+        }
+
+        .api-endpoint {
+            background: var(--bg-tertiary);
+            padding: 10px;
+            border-radius: var(--radius-sm);
+            font-family: monospace;
+            border-left: 3px solid var(--accent-green);
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="upload-container">
+        <div class="upload-header">
+            <h1><i class="fas fa-cloud-upload-alt"></i> Data Upload Center</h1>
+            <p>Upload datasets for Markets, Products, Farmers, and Price Data</p>
+        </div>
+
+        <div class="info-box">
+            <h3><i class="fas fa-info-circle"></i> Supported Data Sources</h3>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-top: 15px;">
+                <div>
+                    <h4><i class="fas fa-file-csv"></i> CSV Files</h4>
+                    <p>Bulk upload from Excel/CSV files</p>
+                </div>
+                <div>
+                    <h4><i class="fas fa-code"></i> JSON Data</h4>
+                    <p>Structured API-ready data</p>
+                </div>
+                <div>
+                    <h4><i class="fas fa-database"></i> SQL Scripts</h4>
+                    <p>Direct database imports</p>
+                </div>
+                <div>
+                    <h4><i class="fas fa-map"></i> Map Integration</h4>
+                    <p>Geocoded location data</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="upload-grid">
+            <!-- Markets Data Upload -->
+            <div class="upload-section">
+                <h3><i class="fas fa-store"></i> Markets Data Upload</h3>
+                <p>Upload Tamil Nadu markets with location coordinates</p>
+                
+                <div class="file-upload-area" onclick="document.getElementById('markets-file').click()" ondrop="handleDrop(event, 'markets')" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)">
+                    <i class="fas fa-cloud-upload-alt" style="font-size: 2rem; color: var(--accent-green); margin-bottom: 10px;"></i>
+                    <p>Click or drag markets CSV/JSON file here</p>
+                    <small>Supports: name, address, latitude, longitude, phone, products</small>
+                </div>
+                <input type="file" id="markets-file" accept=".csv,.json,.sql" style="display: none;" onchange="handleFileSelect(event, 'markets')">
+                
+                <div class="data-format-example">
+                    <strong>CSV Format:</strong><br>
+                    name,address,latitude,longitude,phone,products<br>
+                    "Market Name","Address",13.0827,80.2707,"+91-44-123456","Vegetables,Fruits"
+                </div>
+
+                <button class="upload-button" onclick="uploadData('markets')" id="upload-markets" disabled>
+                    <i class="fas fa-upload"></i> Upload Markets
+                </button>
+                <a href="#" class="sample-download" onclick="downloadSample('markets')">
+                    <i class="fas fa-download"></i> Download Sample
+                </a>
+
+                <div class="progress-bar" id="markets-progress" style="display: none;">
+                    <div class="progress-fill" id="markets-progress-fill"></div>
+                </div>
+                <div class="upload-log" id="markets-log">Ready to upload markets data...</div>
+            </div>
+
+            <!-- Products Data Upload -->
+            <div class="upload-section">
+                <h3><i class="fas fa-apple-alt"></i> Products Data Upload</h3>
+                <p>Upload product catalog with categories and units</p>
+                
+                <div class="file-upload-area" onclick="document.getElementById('products-file').click()" ondrop="handleDrop(event, 'products')" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)">
+                    <i class="fas fa-cloud-upload-alt" style="font-size: 2rem; color: var(--accent-green); margin-bottom: 10px;"></i>
+                    <p>Click or drag products CSV/JSON file here</p>
+                    <small>Supports: name, category, unit, description</small>
+                </div>
+                <input type="file" id="products-file" accept=".csv,.json,.sql" style="display: none;" onchange="handleFileSelect(event, 'products')">
+                
+                <div class="data-format-example">
+                    <strong>CSV Format:</strong><br>
+                    name,category,unit,description<br>
+                    "Tomato","Vegetables","kg","Fresh red tomatoes"
+                </div>
+
+                <button class="upload-button" onclick="uploadData('products')" id="upload-products" disabled>
+                    <i class="fas fa-upload"></i> Upload Products
+                </button>
+                <a href="#" class="sample-download" onclick="downloadSample('products')">
+                    <i class="fas fa-download"></i> Download Sample
+                </a>
+
+                <div class="progress-bar" id="products-progress" style="display: none;">
+                    <div class="progress-fill" id="products-progress-fill"></div>
+                </div>
+                <div class="upload-log" id="products-log">Ready to upload products data...</div>
+            </div>
+
+            <!-- Price Data Upload -->
+            <div class="upload-section">
+                <h3><i class="fas fa-rupee-sign"></i> Price Data Upload</h3>
+                <p>Upload daily price information from markets</p>
+                
+                <div class="file-upload-area" onclick="document.getElementById('prices-file').click()" ondrop="handleDrop(event, 'prices')" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)">
+                    <i class="fas fa-cloud-upload-alt" style="font-size: 2rem; color: var(--accent-green); margin-bottom: 10px;"></i>
+                    <p>Click or drag price CSV/JSON file here</p>
+                    <small>Supports: product, price, unit, market, date</small>
+                </div>
+                <input type="file" id="prices-file" accept=".csv,.json,.sql" style="display: none;" onchange="handleFileSelect(event, 'prices')">
+                
+                <div class="data-format-example">
+                    <strong>CSV Format:</strong><br>
+                    product_name,price,unit,market_name,location,date_recorded<br>
+                    "Tomato",45.50,"kg","Koyambedu Market","Chennai","2024-01-15"
+                </div>
+
+                <button class="upload-button" onclick="uploadData('prices')" id="upload-prices" disabled>
+                    <i class="fas fa-upload"></i> Upload Prices
+                </button>
+                <a href="#" class="sample-download" onclick="downloadSample('prices')">
+                    <i class="fas fa-download"></i> Download Sample
+                </a>
+
+                <div class="progress-bar" id="prices-progress" style="display: none;">
+                    <div class="progress-fill" id="prices-progress-fill"></div>
+                </div>
+                <div class="upload-log" id="prices-log">Ready to upload price data...</div>
+            </div>
+
+            <!-- Farmers Data Upload -->
+            <div class="upload-section">
+                <h3><i class="fas fa-user"></i> Farmers Data Upload</h3>
+                <p>Upload farmer directory with contact information</p>
+                
+                <div class="file-upload-area" onclick="document.getElementById('farmers-file').click()" ondrop="handleDrop(event, 'farmers')" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)">
+                    <i class="fas fa-cloud-upload-alt" style="font-size: 2rem; color: var(--accent-green); margin-bottom: 10px;"></i>
+                    <p>Click or drag farmers CSV/JSON file here</p>
+                    <small>Supports: name, phone, location, crops, coordinates</small>
+                </div>
+                <input type="file" id="farmers-file" accept=".csv,.json,.sql" style="display: none;" onchange="handleFileSelect(event, 'farmers')">
+                
+                <div class="data-format-example">
+                    <strong>CSV Format:</strong><br>
+                    name,phone,location,crops,latitude,longitude<br>
+                    "Farmer Name","+91-9876543210","Village, District","Tomato,Onion",13.0827,80.2707
+                </div>
+
+                <button class="upload-button" onclick="uploadData('farmers')" id="upload-farmers" disabled>
+                    <i class="fas fa-upload"></i> Upload Farmers
+                </button>
+                <a href="#" class="sample-download" onclick="downloadSample('farmers')">
+                    <i class="fas fa-download"></i> Download Sample
+                </a>
+
+                <div class="progress-bar" id="farmers-progress" style="display: none;">
+                    <div class="progress-fill" id="farmers-progress-fill"></div>
+                </div>
+                <div class="upload-log" id="farmers-log">Ready to upload farmers data...</div>
+            </div>
+        </div>
+
+        <!-- API Integration Section -->
+        <div class="upload-section">
+            <h3><i class="fas fa-plug"></i> API Integration & Map Data</h3>
+            
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                <div>
+                    <h4><i class="fas fa-map-marker-alt"></i> Map API Requirements</h4>
+                    <p>For map functionality, your data needs:</p>
+                    <ul>
+                        <li><strong>Latitude & Longitude:</strong> Decimal coordinates (required)</li>
+                        <li><strong>Address:</strong> Full address for geocoding</li>
+                        <li><strong>Market Name:</strong> Display on map markers</li>
+                        <li><strong>Products:</strong> JSON array for info windows</li>
+                        <li><strong>Contact Info:</strong> Phone, hours for user actions</li>
+                    </ul>
+                    
+                    <h5>API Endpoints for Map:</h5>
+                    <div class="api-endpoint">
+                        GET /api/endpoints/markets.php?lat=13.08&lng=80.27&radius=25
+                    </div>
+                </div>
+                
+                <div>
+                    <h4><i class="fas fa-tools"></i> Data Processing Tools</h4>
+                    
+                    <button class="upload-button" onclick="geocodeAddresses()">
+                        <i class="fas fa-map"></i> Auto-Geocode Addresses
+                    </button>
+                    
+                    <button class="upload-button" onclick="validateMapData()">
+                        <i class="fas fa-check-circle"></i> Validate Map Data
+                    </button>
+                    
+                    <button class="upload-button" onclick="exportForMap()">
+                        <i class="fas fa-download"></i> Export Map-Ready Data
+                    </button>
+                    
+                    <div class="upload-log" id="tools-log">Data processing tools ready...</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Database Status -->
+        <div class="upload-section">
+            <h3><i class="fas fa-database"></i> Database Status & Bulk Operations</h3>
+            
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">
+                <div>
+                    <h5>Current Records:</h5>
+                    <div id="db-stats">
+                        <div>Markets: <span id="markets-count">Loading...</span></div>
+                        <div>Products: <span id="products-count">Loading...</span></div>
+                        <div>Farmers: <span id="farmers-count">Loading...</span></div>
+                        <div>Prices: <span id="prices-count">Loading...</span></div>
+                    </div>
+                </div>
+                
+                <div>
+                    <h5>Bulk Operations:</h5>
+                    <button class="upload-button" onclick="clearAllData()" style="background: var(--accent-red);">
+                        <i class="fas fa-trash"></i> Clear All Data
+                    </button>
+                    <button class="upload-button" onclick="exportAllData()">
+                        <i class="fas fa-download"></i> Export All Data
+                    </button>
+                </div>
+                
+                <div>
+                    <h5>Sample Datasets:</h5>
+                    <button class="upload-button" onclick="loadSampleData()">
+                        <i class="fas fa-magic"></i> Load Sample Data
+                    </button>
+                    <button class="upload-button" onclick="loadTamilNaduData()">
+                        <i class="fas fa-map"></i> Load Tamil Nadu Markets
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Include required scripts -->
+    <script src="js/common.js"></script>
+    
+    <script>
+        // Global variables
+        let uploadFiles = {};
+        
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', () => {
+            loadDatabaseStats();
+            logMessage('all', 'Data Upload Center initialized successfully');
+        });
+
+        // File handling functions
+        function handleDragOver(event) {
+            event.preventDefault();
+            event.currentTarget.classList.add('dragover');
+        }
+
+        function handleDragLeave(event) {
+            event.currentTarget.classList.remove('dragover');
+        }
+
+        function handleDrop(event, type) {
+            event.preventDefault();
+            event.currentTarget.classList.remove('dragover');
+            
+            const files = event.dataTransfer.files;
+            if (files.length > 0) {
+                handleFileSelect({ target: { files } }, type);
+            }
+        }
+
+        function handleFileSelect(event, type) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            uploadFiles[type] = file;
+            
+            logMessage(type, `File selected: ${file.name} (${formatFileSize(file.size)})`);
+            
+            // Enable upload button
+            document.getElementById(`upload-${type}`).disabled = false;
+            
+            // Preview file content
+            previewFile(file, type);
+        }
+
+        function previewFile(file, type) {
+            const reader = new FileReader();
+            
+            reader.onload = function(e) {
+                const content = e.target.result;
+                let preview = '';
+                
+                if (file.name.endsWith('.csv')) {
+                    const lines = content.split('\n').slice(0, 3);
+                    preview = lines.join('\n');
+                } else if (file.name.endsWith('.json')) {
+                    try {
+                        const data = JSON.parse(content);
+                        preview = JSON.stringify(Array.isArray(data) ? data.slice(0, 2) : data, null, 2);
+                    } catch (e) {
+                        preview = content.substring(0, 200) + '...';
+                    }
+                } else {
+                    preview = content.substring(0, 200) + '...';
+                }
+                
+                logMessage(type, `File preview:\n${preview}`);
+            };
+            
+            reader.readAsText(file);
+        }
+
+        // Upload functions
+        async function uploadData(type) {
+            const file = uploadFiles[type];
+            if (!file) {
+                logMessage(type, 'No file selected for upload', 'error');
+                return;
+            }
+
+            const uploadBtn = document.getElementById(`upload-${type}`);
+            uploadBtn.disabled = true;
+            uploadBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Uploading...';
+            
+            showProgress(type, 0);
+            logMessage(type, `Starting upload of ${file.name}...`);
+
+            try {
+                const formData = new FormData();
+                formData.append('file', file);
+                formData.append('type', type);
+
+                // Simulate progress
+                let progress = 0;
+                const progressInterval = setInterval(() => {
+                    progress += Math.random() * 20;
+                    if (progress < 90) {
+                        showProgress(type, progress);
+                    }
+                }, 200);
+
+                const response = await fetch('/api/endpoints/upload-data.php', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                clearInterval(progressInterval);
+                showProgress(type, 100);
+
+                const result = await response.json();
+                
+                if (result.success) {
+                    logMessage(type, `✅ Upload successful: ${result.message}`);
+                    logMessage(type, `Records processed: ${result.processed || 0}`);
+                    loadDatabaseStats(); // Refresh counts
+                } else {
+                    logMessage(type, `❌ Upload failed: ${result.error}`, 'error');
+                }
+            } catch (error) {
+                logMessage(type, `❌ Upload error: ${error.message}`, 'error');
+            } finally {
+                uploadBtn.disabled = false;
+                uploadBtn.innerHTML = `<i class="fas fa-upload"></i> Upload ${type.charAt(0).toUpperCase() + type.slice(1)}`;
+                setTimeout(() => hideProgress(type), 2000);
+            }
+        }
+
+        // Sample data functions
+        function downloadSample(type) {
+            const samples = {
+                markets: [
+                    ['name', 'address', 'latitude', 'longitude', 'phone', 'products', 'hours'],
+                    ['Koyambedu Market', 'Koyambedu, Chennai, Tamil Nadu 600107', '13.0732', '80.1986', '+91-44-26790000', 'Vegetables,Fruits,Spices', 'Mon-Sun: 5:00 AM - 10:00 PM'],
+                    ['Gandhi Market', 'Gandhi Puram, Coimbatore, Tamil Nadu 641012', '11.0168', '76.9558', '+91-422-2439876', 'Vegetables,Fruits,Grains', 'Mon-Sun: 6:00 AM - 9:00 PM']
+                ],
+                products: [
+                    ['name', 'category', 'unit', 'description'],
+                    ['Tomato', 'Vegetables', 'kg', 'Fresh red tomatoes'],
+                    ['Rice', 'Grains', 'kg', 'Basmati rice'],
+                    ['Apple', 'Fruits', 'kg', 'Fresh apples']
+                ],
+                prices: [
+                    ['product_name', 'price', 'unit', 'market_name', 'location', 'date_recorded'],
+                    ['Tomato', '45.50', 'kg', 'Koyambedu Market', 'Chennai', '2024-01-15'],
+                    ['Rice', '65.00', 'kg', 'Gandhi Market', 'Coimbatore', '2024-01-15']
+                ],
+                farmers: [
+                    ['name', 'phone', 'location', 'crops', 'latitude', 'longitude'],
+                    ['Ramesh Kumar', '+91-9876543210', 'Tiruvallur, Tamil Nadu', 'Tomato,Onion,Potato', '13.1444', '79.9729'],
+                    ['Suresh Patel', '+91-9876543211', 'Salem, Tamil Nadu', 'Rice,Wheat,Sugarcane', '11.6643', '78.1460']
+                ]
+            };
+
+            const csvContent = samples[type].map(row => row.map(cell => `"${cell}"`).join(',')).join('\n');
+            const blob = new Blob([csvContent], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `sample_${type}.csv`;
+            a.click();
+            
+            window.URL.revokeObjectURL(url);
+            logMessage(type, `Sample ${type} CSV downloaded`);
+        }
+
+        // Utility functions
+        function logMessage(type, message, level = 'info') {
+            const logElement = document.getElementById(`${type}-log`);
+            if (!logElement) {
+                console.log(`[${type}] ${message}`);
+                return;
+            }
+            
+            const timestamp = new Date().toLocaleTimeString();
+            const prefix = level === 'error' ? '❌' : level === 'success' ? '✅' : 'ℹ️';
+            
+            logElement.textContent += `\n[${timestamp}] ${prefix} ${message}`;
+            logElement.scrollTop = logElement.scrollHeight;
+        }
+
+        function showProgress(type, percent) {
+            const progressBar = document.getElementById(`${type}-progress`);
+            const progressFill = document.getElementById(`${type}-progress-fill`);
+            
+            if (progressBar && progressFill) {
+                progressBar.style.display = 'block';
+                progressFill.style.width = `${Math.min(percent, 100)}%`;
+            }
+        }
+
+        function hideProgress(type) {
+            const progressBar = document.getElementById(`${type}-progress`);
+            if (progressBar) {
+                progressBar.style.display = 'none';
+            }
+        }
+
+        function formatFileSize(bytes) {
+            if (bytes === 0) return '0 Bytes';
+            const k = 1024;
+            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+        }
+
+        // Database functions
+        async function loadDatabaseStats() {
+            try {
+                const stats = await Promise.all([
+                    fetch('/api/endpoints/markets.php').then(r => r.json()),
+                    fetch('/api/endpoints/products.php').then(r => r.json()),
+                    fetch('/api/endpoints/farmers.php').then(r => r.json()),
+                    fetch('/api/endpoints/prices.php').then(r => r.json())
+                ]);
+
+                document.getElementById('markets-count').textContent = stats[0].data?.length || 0;
+                document.getElementById('products-count').textContent = stats[1].data?.length || 0;
+                document.getElementById('farmers-count').textContent = stats[2].data?.length || 0;
+                document.getElementById('prices-count').textContent = stats[3].data?.length || 0;
+            } catch (error) {
+                console.error('Error loading database stats:', error);
+            }
+        }
+
+        // Data processing tools
+        async function geocodeAddresses() {
+            logMessage('tools', 'Starting address geocoding...');
+            // Implementation for geocoding addresses using Google Maps API
+        }
+
+        async function validateMapData() {
+            logMessage('tools', 'Validating map data...');
+            // Implementation for validating coordinate data
+        }
+
+        async function exportForMap() {
+            logMessage('tools', 'Exporting map-ready data...');
+            // Implementation for exporting formatted map data
+        }
+
+        async function loadSampleData() {
+            logMessage('tools', 'Loading sample dataset...');
+            // Implementation for loading sample data
+        }
+
+        async function loadTamilNaduData() {
+            logMessage('tools', 'Loading Tamil Nadu markets data...');
+            try {
+                const response = await fetch('/api/endpoints/load-tn-data.php', {
+                    method: 'POST'
+                });
+                const result = await response.json();
+                
+                if (result.success) {
+                    logMessage('tools', `✅ Tamil Nadu data loaded: ${result.count} markets`);
+                    loadDatabaseStats();
+                } else {
+                    logMessage('tools', `❌ Failed to load data: ${result.error}`, 'error');
+                }
+            } catch (error) {
+                logMessage('tools', `❌ Error: ${error.message}`, 'error');
+            }
+        }
+
+        async function clearAllData() {
+            if (!confirm('Are you sure you want to clear all data? This action cannot be undone.')) {
+                return;
+            }
+            
+            logMessage('tools', 'Clearing all data...');
+            // Implementation for clearing all data
+        }
+
+        async function exportAllData() {
+            logMessage('tools', 'Exporting all data...');
+            // Implementation for exporting all data
+        }
+    </script>
+</body>
+</html>

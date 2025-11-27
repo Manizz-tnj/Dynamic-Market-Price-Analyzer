@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Price Predictions - Market Analyzer</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <i class="fas fa-chart-line"></i>
+                <span>Market Analyzer</span>
+            </div>
+            <ul class="nav-menu">
+                <li><a href="index.html" class="nav-link">Dashboard</a></li>
+                <li><a href="map.html" class="nav-link">Market Map</a></li>
+                <li><a href="predictions.html" class="nav-link active">Price Predictions</a></li>
+                <li><a href="admin.html" class="nav-link">Admin Panel</a></li>
+            </ul>
+            <div class="hamburger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Header Section -->
+        <section class="header-section">
+            <div class="container">
+                <h1 class="page-title">Price Predictions</h1>
+                <p class="page-subtitle">AI-powered forecasts for next day and weekly prices</p>
+            </div>
+        </section>
+
+        <!-- Prediction Controls -->
+        <section class="prediction-controls">
+            <div class="container">
+                <div class="controls-container">
+                    <div class="filter-group">
+                        <label for="product-select">Select Product:</label>
+                        <select id="product-select" class="filter-select">
+                            <option value="">Choose a product...</option>
+                            <optgroup label="Vegetables">
+                                <option value="tomato">Tomato</option>
+                                <option value="onion">Onion</option>
+                                <option value="potato">Potato</option>
+                                <option value="carrot">Carrot</option>
+                                <option value="cabbage">Cabbage</option>
+                            </optgroup>
+                            <optgroup label="Fruits">
+                                <option value="apple">Apple</option>
+                                <option value="banana">Banana</option>
+                                <option value="orange">Orange</option>
+                                <option value="mango">Mango</option>
+                                <option value="grapes">Grapes</option>
+                            </optgroup>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label for="market-select">Market:</label>
+                        <select id="market-select" class="filter-select">
+                            <option value="all">All Markets</option>
+                            <option value="market1">Central Market</option>
+                            <option value="market2">Farmers Market</option>
+                            <option value="market3">City Market</option>
+                        </select>
+                    </div>
+                    <button id="generate-prediction-btn" class="btn btn-primary">
+                        <i class="fas fa-magic"></i>
+                        Generate Prediction
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Tomorrow's Prediction -->
+        <section class="tomorrow-prediction">
+            <div class="container">
+                <div class="prediction-card tomorrow-card">
+                    <div class="card-header">
+                        <h2>Tomorrow's Price Prediction</h2>
+                        <div class="prediction-date" id="tomorrow-date">
+                            <i class="fas fa-calendar-day"></i>
+                            <span>August 31, 2025</span>
+                        </div>
+                    </div>
+                    <div class="card-content">
+                        <div class="prediction-display" id="tomorrow-prediction">
+                            <div class="current-price">
+                                <span class="label">Current Price</span>
+                                <span class="price" id="current-price">₹45.00</span>
+                            </div>
+                            <div class="arrow-container">
+                                <i class="fas fa-arrow-right prediction-arrow"></i>
+                            </div>
+                            <div class="predicted-price">
+                                <span class="label">Predicted Price</span>
+                                <span class="price" id="predicted-price">₹48.50</span>
+                                <span class="change positive" id="price-change">+₹3.50 (+7.8%)</span>
+                            </div>
+                        </div>
+                        <div class="confidence-meter">
+                            <span class="confidence-label">Prediction Confidence:</span>
+                            <div class="confidence-bar">
+                                <div class="confidence-fill" id="confidence-fill" style="width: 85%"></div>
+                            </div>
+                            <span class="confidence-value" id="confidence-value">85%</span>
+                        </div>
+                        <div class="prediction-factors">
+                            <h4>Key Factors</h4>
+                            <div class="factors-list" id="prediction-factors">
+                                <div class="factor-item positive">
+                                    <i class="fas fa-arrow-up"></i>
+                                    <span>High demand expected</span>
+                                </div>
+                                <div class="factor-item negative">
+                                    <i class="fas fa-arrow-down"></i>
+                                    <span>Weather conditions affecting supply</span>
+                                </div>
+                                <div class="factor-item neutral">
+                                    <i class="fas fa-minus"></i>
+                                    <span>Seasonal patterns</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Weekly Trends -->
+        <section class="weekly-trends">
+            <div class="container">
+                <div class="trends-card">
+                    <div class="card-header">
+                        <h2>7-Day Price Trends</h2>
+                        <div class="chart-controls">
+                            <button class="chart-btn active" data-chart="price">Price</button>
+                            <button class="chart-btn" data-chart="volume">Volume</button>
+                            <button class="chart-btn" data-chart="both">Both</button>
+                        </div>
+                    </div>
+                    <div class="card-content">
+                        <div class="chart-container">
+                            <canvas id="weekly-chart"></canvas>
+                        </div>
+                        <div class="chart-legend">
+                            <div class="legend-item">
+                                <div class="legend-color" style="background: #4f46e5;"></div>
+                                <span>Actual Prices</span>
+                            </div>
+                            <div class="legend-item">
+                                <div class="legend-color" style="background: #10b981;"></div>
+                                <span>Predicted Prices</span>
+                            </div>
+                            <div class="legend-item">
+                                <div class="legend-color" style="background: #f59e0b;"></div>
+                                <span>Market Volume</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Price Analysis -->
+        <section class="price-analysis">
+            <div class="container">
+                <div class="analysis-grid">
+                    <div class="analysis-card">
+                        <div class="card-icon">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                        <div class="card-content">
+                            <h3>Trend Analysis</h3>
+                            <p class="trend-description" id="trend-description">
+                                Prices showing upward trend due to seasonal demand increase.
+                            </p>
+                            <div class="trend-indicators">
+                                <div class="indicator">
+                                    <span class="indicator-label">Short-term:</span>
+                                    <span class="indicator-value bullish">Bullish</span>
+                                </div>
+                                <div class="indicator">
+                                    <span class="indicator-label">Long-term:</span>
+                                    <span class="indicator-value stable">Stable</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="analysis-card">
+                        <div class="card-icon">
+                            <i class="fas fa-balance-scale"></i>
+                        </div>
+                        <div class="card-content">
+                            <h3>Supply & Demand</h3>
+                            <div class="supply-demand-chart">
+                                <div class="chart-item">
+                                    <span>Supply</span>
+                                    <div class="bar-container">
+                                        <div class="bar supply-bar" style="width: 65%"></div>
+                                    </div>
+                                    <span>65%</span>
+                                </div>
+                                <div class="chart-item">
+                                    <span>Demand</span>
+                                    <div class="bar-container">
+                                        <div class="bar demand-bar" style="width: 85%"></div>
+                                    </div>
+                                    <span>85%</span>
+                                </div>
+                            </div>
+                            <p class="analysis-note">High demand with moderate supply indicates potential price increase.</p>
+                        </div>
+                    </div>
+
+                    <div class="analysis-card">
+                        <div class="card-icon">
+                            <i class="fas fa-cloud-rain"></i>
+                        </div>
+                        <div class="card-content">
+                            <h3>Weather Impact</h3>
+                            <div class="weather-factors">
+                                <div class="weather-item">
+                                    <i class="fas fa-sun"></i>
+                                    <span>Sunny weather expected</span>
+                                    <span class="impact positive">+2%</span>
+                                </div>
+                                <div class="weather-item">
+                                    <i class="fas fa-cloud-rain"></i>
+                                    <span>Light rain possible</span>
+                                    <span class="impact negative">-1%</span>
+                                </div>
+                            </div>
+                            <p class="analysis-note">Weather conditions favor stable supply chain.</p>
+                        </div>
+                    </div>
+
+                    <div class="analysis-card">
+                        <div class="card-icon">
+                            <i class="fas fa-history"></i>
+                        </div>
+                        <div class="card-content">
+                            <h3>Historical Comparison</h3>
+                            <div class="historical-stats">
+                                <div class="stat-item">
+                                    <span class="stat-label">Last Week:</span>
+                                    <span class="stat-value">₹42.30</span>
+                                    <span class="stat-change positive">+6.4%</span>
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-label">Last Month:</span>
+                                    <span class="stat-value">₹39.80</span>
+                                    <span class="stat-change positive">+13.1%</span>
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-label">Last Year:</span>
+                                    <span class="stat-value">₹41.50</span>
+                                    <span class="stat-change positive">+8.4%</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Price Alerts -->
+        <section class="price-alerts">
+            <div class="container">
+                <div class="alerts-card">
+                    <div class="card-header">
+                        <h2>Price Alerts</h2>
+                        <button class="btn btn-primary" id="add-alert-btn">
+                            <i class="fas fa-plus"></i>
+                            Add Alert
+                        </button>
+                    </div>
+                    <div class="card-content">
+                        <div class="alerts-list" id="alerts-list">
+                            <div class="alert-item">
+                                <div class="alert-info">
+                                    <span class="alert-product">Tomato</span>
+                                    <span class="alert-condition">Price above ₹50.00</span>
+                                </div>
+                                <div class="alert-actions">
+                                    <button class="btn-icon" title="Edit">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button class="btn-icon" title="Delete">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="alert-item">
+                                <div class="alert-info">
+                                    <span class="alert-product">Onion</span>
+                                    <span class="alert-condition">Price drops below ₹30.00</span>
+                                </div>
+                                <div class="alert-actions">
+                                    <button class="btn-icon" title="Edit">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button class="btn-icon" title="Delete">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2025 Market Price Analyzer. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- Add Alert Modal -->
+    <div class="modal" id="alert-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Add Price Alert</h3>
+                <button class="modal-close" id="alert-modal-close">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="alert-form">
+                    <div class="form-group">
+                        <label for="alert-product">Product:</label>
+                        <select id="alert-product" required>
+                            <option value="">Select product...</option>
+                            <option value="tomato">Tomato</option>
+                            <option value="onion">Onion</option>
+                            <option value="potato">Potato</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="alert-condition">Condition:</label>
+                        <select id="alert-condition" required>
+                            <option value="above">Price above</option>
+                            <option value="below">Price below</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="alert-price">Price (₹):</label>
+                        <input type="number" id="alert-price" step="0.01" required>
+                    </div>
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-secondary" id="cancel-alert">Cancel</button>
+                        <button type="submit" class="btn btn-primary">Add Alert</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/clean-data.js"></script>
+    <script src="js/predictions.js"></script>
+    <script src="js/common.js"></script>
+</body>
+</html>

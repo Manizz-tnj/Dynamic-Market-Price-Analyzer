@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Market Map - Find Nearby Markets</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <i class="fas fa-chart-line"></i>
+                <span>Market Analyzer</span>
+            </div>
+            <ul class="nav-menu">
+                <li><a href="index.html" class="nav-link">Dashboard</a></li>
+                <li><a href="map.html" class="nav-link active">Market Map</a></li>
+                <li><a href="predictions.html" class="nav-link">Price Predictions</a></li>
+                <li><a href="admin.html" class="nav-link">Admin Panel</a></li>
+            </ul>
+            <div class="hamburger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Header Section -->
+        <section class="header-section">
+            <div class="container">
+                <h1 class="page-title">Market Locator</h1>
+                <p class="page-subtitle">Find nearby markets and get directions</p>
+            </div>
+        </section>
+
+        <!-- Map Controls -->
+        <section class="map-controls">
+            <div class="container">
+                <div class="controls-container">
+                    <button id="find-location-btn" class="btn btn-primary">
+                        <i class="fas fa-location-arrow"></i>
+                        Find My Location
+                    </button>
+                    <div class="search-location">
+                        <input type="text" id="location-search" placeholder="Search for a location..." class="location-input">
+                        <button id="search-location-btn" class="btn btn-secondary">
+                            <i class="fas fa-search"></i>
+                        </button>
+                    </div>
+                    <div class="radius-selector">
+                        <label for="search-radius">Search Radius:</label>
+                        <select id="search-radius" class="filter-select">
+                            <option value="1">1 km</option>
+                            <option value="5" selected>5 km</option>
+                            <option value="10">10 km</option>
+                            <option value="25">25 km</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Map Container -->
+        <section class="map-section">
+            <div class="container">
+                <div class="map-container">
+                    <div id="map" class="map-canvas">
+                        <!-- Map will be initialized here -->
+                    </div>
+                    
+                    <!-- Market List Sidebar -->
+                    <div class="market-sidebar" id="market-sidebar">
+                        <div class="sidebar-header">
+                            <h3>Nearby Markets</h3>
+                            <span class="market-count" id="market-count">0 markets found</span>
+                        </div>
+                        <div class="market-list" id="market-list">
+                            <!-- Market cards will be dynamically loaded here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Market Details Modal -->
+        <div class="modal" id="market-modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 id="modal-market-name">Market Name</h3>
+                    <button class="modal-close" id="modal-close">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="market-info">
+                        <div class="info-item">
+                            <i class="fas fa-map-marker-alt"></i>
+                            <span id="modal-market-address">Market Address</span>
+                        </div>
+                        <div class="info-item">
+                            <i class="fas fa-phone"></i>
+                            <span id="modal-market-phone">+1 234 567 8900</span>
+                        </div>
+                        <div class="info-item">
+                            <i class="fas fa-clock"></i>
+                            <span id="modal-market-hours">6:00 AM - 8:00 PM</span>
+                        </div>
+                        <div class="info-item">
+                            <i class="fas fa-route"></i>
+                            <span id="modal-market-distance">1.2 km away</span>
+                        </div>
+                    </div>
+                    <div class="market-actions">
+                        <button class="btn btn-primary" id="get-directions-btn">
+                            <i class="fas fa-directions"></i>
+                            Get Directions
+                        </button>
+                        <button class="btn btn-secondary" id="call-market-btn">
+                            <i class="fas fa-phone"></i>
+                            Call Market
+                        </button>
+                        <button class="btn btn-secondary" id="view-prices-btn">
+                            <i class="fas fa-tags"></i>
+                            View Prices
+                        </button>
+                    </div>
+                    <div class="market-products">
+                        <h4>Available Products</h4>
+                        <div class="products-tags" id="modal-products">
+                            <!-- Product tags will be loaded here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2025 Market Price Analyzer. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- Google Maps API -->
+    <script async defer 
+        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyD4J6IfHnCL1UXZ9HPe7ztkuVldGrte_50&callback=initMap&libraries=places">
+    </script>
+    <script src="js/map.js"></script>
+    <script src="js/common.js"></script>
+</body>
+</html>

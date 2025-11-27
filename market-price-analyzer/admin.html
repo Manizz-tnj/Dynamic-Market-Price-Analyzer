@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel - Market Analyzer</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/compatibility.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Browser compatibility polyfills -->
+    <script src="js/polyfills.js"></script>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <i class="fas fa-chart-line"></i>
+                <span>Market Analyzer</span>
+            </div>
+            <ul class="nav-menu">
+                <li><a href="index.html" class="nav-link">Dashboard</a></li>
+                <li><a href="map.html" class="nav-link">Market Map</a></li>
+                <li><a href="predictions.html" class="nav-link">Price Predictions</a></li>
+                <li><a href="admin.html" class="nav-link active">Admin Panel</a></li>
+            </ul>
+            <div class="hamburger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Header Section -->
+        <section class="header-section">
+            <div class="container">
+                <h1 class="page-title">Admin Panel</h1>
+                <p class="page-subtitle">Manage farmers and send mass SMS communications</p>
+                
+                <!-- Admin Stats -->
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="total-farmers">0</h3>
+                            <p>Registered Farmers</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-sms"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="sms-sent">0</h3>
+                            <p>SMS Sent This Month</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="active-farmers">0</h3>
+                            <p>Active Farmers</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Quick Actions -->
+        <section class="quick-actions-admin">
+            <div class="container">
+                <div class="actions-row">
+                    <button class="btn btn-primary" id="compose-sms-btn">
+                        <i class="fas fa-paper-plane"></i>
+                        Compose SMS
+                    </button>
+                    <button class="btn btn-secondary" id="add-farmer-btn">
+                        <i class="fas fa-user-plus"></i>
+                        Add Farmer
+                    </button>
+                    <button class="btn btn-secondary" id="import-farmers-btn">
+                        <i class="fas fa-file-import"></i>
+                        Import Farmers
+                    </button>
+                    <button class="btn btn-secondary" id="export-data-btn">
+                        <i class="fas fa-download"></i>
+                        Export Data
+                    </button>
+                    <button class="btn btn-danger" id="delete-selected-btn" onclick="deleteSelectedFarmers()" title="Delete Selected Farmers">
+                        <i class="fas fa-trash-alt"></i>
+                        Delete Selected
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Price Management Section -->
+        <section class="price-management">
+            <div class="container">
+                <div class="section-header">
+                    <h2>Price Management</h2>
+                    <button class="btn btn-primary" id="add-price-btn">
+                        <i class="fas fa-plus"></i>
+                        Add Price Update
+                    </button>
+                </div>
+                
+                <!-- Price Entry Form -->
+                <div class="price-form-container" id="price-form" style="display: none;">
+                    <div class="form-card">
+                        <div class="card-header">
+                            <h3>Add New Price</h3>
+                            <button class="btn-close" id="close-price-form">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                        <div class="card-content">
+                            <form id="price-entry-form">
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="product-select">Product:</label>
+                                        <select id="product-select-price" class="filter-select" required>
+                                            <option value="">Select a product...</option>
+                                            <option value="Tomato">Tomato</option>
+                                            <option value="Onion">Onion</option>
+                                            <option value="Potato">Potato</option>
+                                            <option value="Carrot">Carrot</option>
+                                            <option value="Cabbage">Cabbage</option>
+                                            <option value="Cauliflower">Cauliflower</option>
+                                            <option value="Spinach">Spinach</option>
+                                            <option value="Brinjal">Brinjal</option>
+                                            <option value="Apple">Apple</option>
+                                            <option value="Banana">Banana</option>
+                                            <option value="Orange">Orange</option>
+                                            <option value="Mango">Mango</option>
+                                            <option value="Grapes">Grapes</option>
+                                            <option value="Pomegranate">Pomegranate</option>
+                                            <option value="Papaya">Papaya</option>
+                                            <option value="Watermelon">Watermelon</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="price-input">Price (₹):</label>
+                                        <input type="number" id="price-input" class="form-input" step="0.01" min="0" required>
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="unit-select">Unit:</label>
+                                        <select id="unit-select" class="filter-select">
+                                            <option value="kg">Kilogram (kg)</option>
+                                            <option value="piece">Per Piece</option>
+                                            <option value="dozen">Dozen</option>
+                                            <option value="gram">Gram</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="market-location">Market Location:</label>
+                                        <input type="text" id="market-location" class="form-input" placeholder="e.g., Central Market, Delhi">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="farmer-select">Farmer:</label>
+                                        <select id="farmer-select-price" class="filter-select">
+                                            <option value="">Select farmer (optional)...</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="form-actions">
+                                    <button type="submit" class="btn btn-primary">
+                                        <i class="fas fa-save"></i>
+                                        Save Price
+                                    </button>
+                                    <button type="button" class="btn btn-secondary" id="cancel-price-form">
+                                        <i class="fas fa-times"></i>
+                                        Cancel
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Recent Price Updates -->
+                <div class="recent-prices">
+                    <h3>Recent Price Updates</h3>
+                    <div class="price-updates-list" id="price-updates-list">
+                        <!-- Price updates will be loaded here -->
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SMS Composer -->
+        <!-- SMS Composer (Hidden by default) -->
+        <section class="sms-composer" id="sms-composer" style="display: none;"
+            <div class="container">
+                <div class="composer-card">
+                    <div class="card-header">
+                        <h2>Compose Mass SMS</h2>
+                        <div class="composer-stats">
+                            <span id="selected-count">0 farmers selected</span>
+                            <span id="estimated-cost">Cost: ₹0.00</span>
+                        </div>
+                    </div>
+                    <div class="card-content">
+                        <div class="composer-form">
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="recipient-filter">Recipients:</label>
+                                    <select id="recipient-filter" class="filter-select">
+                                        <option value="all">All Farmers</option>
+                                        <option value="active">Active Farmers Only</option>
+                                        <option value="location">By Location</option>
+                                        <option value="crop">By Crop Type</option>
+                                        <option value="custom">Custom Selection</option>
+                                    </select>
+                                </div>
+                                <div class="form-group" id="location-filter" style="display: none;">
+                                    <label for="location-select">Location:</label>
+                                    <select id="location-select" class="filter-select">
+                                        <option value="">Select location...</option>
+                                        <option value="delhi">Delhi</option>
+                                        <option value="mumbai">Mumbai</option>
+                                        <option value="bangalore">Bangalore</option>
+                                        <option value="pune">Pune</option>
+                                    </select>
+                                </div>
+                                <div class="form-group" id="crop-filter" style="display: none;">
+                                    <label for="crop-select">Crop Type:</label>
+                                    <select id="crop-select" class="filter-select">
+                                        <option value="">Select crop...</option>
+                                        <option value="vegetables">Vegetables</option>
+                                        <option value="fruits">Fruits</option>
+                                        <option value="grains">Grains</option>
+                                        <option value="pulses">Pulses</option>
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="message-template">Message Template:</label>
+                                <select id="message-template" class="filter-select">
+                                    <option value="">Select template...</option>
+                                    <option value="price-update">Price Update</option>
+                                    <option value="market-info">Market Information</option>
+                                    <option value="weather-alert">Weather Alert</option>
+                                    <option value="payment-reminder">Payment Reminder</option>
+                                    <option value="custom">Custom Message</option>
+                                </select>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="sms-message">Message:</label>
+                                <textarea id="sms-message" rows="4" placeholder="Enter your message here..." maxlength="160"></textarea>
+                                <div class="message-info">
+                                    <span class="char-count">
+                                        <span id="char-count">0</span>/160 characters
+                                    </span>
+                                    <span class="sms-count">
+                                        <span id="sms-count">1</span> SMS
+                                    </span>
+                                </div>
+                            </div>
+                            
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="schedule-option">Send Option:</label>
+                                    <select id="schedule-option" class="filter-select">
+                                        <option value="now">Send Now</option>
+                                        <option value="schedule">Schedule for Later</option>
+                                    </select>
+                                </div>
+                                <div class="form-group" id="schedule-time" style="display: none;">
+                                    <label for="schedule-datetime">Schedule Date & Time:</label>
+                                    <input type="datetime-local" id="schedule-datetime">
+                                </div>
+                            </div>
+                            
+                            <div class="form-actions">
+                                <button class="btn btn-secondary" id="preview-sms-btn">
+                                    <i class="fas fa-eye"></i>
+                                    Preview
+                                </button>
+                                <button class="btn btn-primary" id="send-sms-btn">
+                                    <i class="fas fa-paper-plane"></i>
+                                    Send SMS
+                                </button>
+                                <button class="btn btn-whatsapp" id="bulk-whatsapp-btn">
+                                    <i class="fab fa-whatsapp"></i>
+                                    Bulk WhatsApp
+                                </button>
+                            </div>
+                            <div class="communication-note">
+                                <p><i class="fas fa-info-circle"></i> Select farmers from the table below to use bulk communication features</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Farmers Management -->
+        <section class="farmers-management">
+            <div class="container">
+                <div class="management-card">
+                    <div class="card-header">
+                        <div class="header-content">
+                            <h2>Farmers Management</h2>
+                            <div class="header-actions">
+                                <button class="btn btn-info" id="refresh-data-btn">
+                                    <i class="fas fa-sync-alt"></i>
+                                    Refresh
+                                </button>
+                            </div>
+                        </div>
+                        <div class="management-toolbar">
+                            <div class="search-filters">
+                                <div class="search-container">
+                                    <input type="text" id="farmer-search" placeholder="Search farmers..." class="search-input">
+                                    <i class="fas fa-search search-icon"></i>
+                                </div>
+                                <select id="status-filter" class="filter-select">
+                                    <option value="all">All Status</option>
+                                    <option value="active">Active</option>
+                                    <option value="inactive">Inactive</option>
+                                    <option value="pending">Pending</option>
+                                </select>
+                            </div>
+                            <div class="bulk-actions" id="bulk-actions" style="display: none;">
+                                <span class="selection-info" id="selection-info">0 farmers selected</span>
+                                <div class="bulk-buttons">
+                                    <button class="btn btn-sm btn-whatsapp" id="bulk-whatsapp-btn-table">
+                                        <i class="fab fa-whatsapp"></i>
+                                        WhatsApp
+                                    </button>
+                                    <button class="btn btn-sm btn-success" id="bulk-call-btn-table">
+                                        <i class="fas fa-phone"></i>
+                                        Call
+                                    </button>
+                                    <button class="btn btn-sm btn-primary" id="bulk-sms-btn-table">
+                                        <i class="fas fa-sms"></i>
+                                        SMS
+                                    </button>
+                                    <button class="btn btn-sm btn-danger" id="bulk-delete-btn">
+                                        <i class="fas fa-trash"></i>
+                                        Delete
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="card-content">
+                        <div class="farmers-table-container">
+                            <table class="farmers-table" id="farmers-table">
+                                <thead>
+                                    <tr>
+                                        <th>
+                                            <input type="checkbox" id="select-all-farmers">
+                                        </th>
+                                        <th>Name</th>
+                                        <th>Phone</th>
+                                        <th>Location</th>
+                                        <th>Crop Type</th>
+                                        <th>Status</th>
+                                        <th>Last Contact</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="farmers-tbody">
+                                    <!-- Farmers data will be loaded here -->
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="table-pagination" id="farmers-pagination" style="display: none;">
+                            <div class="pagination-info">
+                                Showing <span id="showing-start">0</span>-<span id="showing-end">0</span> of <span id="total-farmers-count">0</span> farmers
+                            </div>
+                            <div class="pagination-controls">
+                                <button class="btn-icon" id="prev-page" disabled>
+                                    <i class="fas fa-chevron-left"></i>
+                                </button>
+                                <span class="page-numbers" id="page-numbers">
+                                    <!-- Page numbers will be generated here -->
+                                </span>
+                                <button class="btn-icon" id="next-page" disabled>
+                                    <i class="fas fa-chevron-right"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SMS History -->
+        <section class="sms-history">
+            <div class="container">
+                <div class="history-card">
+                    <div class="card-header">
+                        <h2>SMS History</h2>
+                        <div class="history-filters">
+                            <select id="history-filter" class="filter-select">
+                                <option value="today">Today</option>
+                                <option value="week">This Week</option>
+                                <option value="month">This Month</option>
+                                <option value="all">All Time</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="card-content">
+                        <div class="history-list" id="sms-history-list">
+                            <!-- SMS history items will be loaded here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2025 Market Price Analyzer. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- Add Farmer Modal -->
+    <div class="modal" id="farmer-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="farmer-modal-title">Add New Farmer</h3>
+                <button class="modal-close" id="farmer-modal-close">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="farmer-form">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="farmer-name">Full Name:</label>
+                            <input type="text" id="farmer-name" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="farmer-phone">Phone Number:</label>
+                            <input type="tel" id="farmer-phone" required>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="farmer-location">Location:</label>
+                            <input type="text" id="farmer-location" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="farmer-crop">Primary Crop:</label>
+                            <select id="farmer-crop" required>
+                                <option value="">Select crop type...</option>
+                                <option value="vegetables">Vegetables</option>
+                                <option value="fruits">Fruits</option>
+                                <option value="grains">Grains</option>
+                                <option value="pulses">Pulses</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="farmer-email">Email (Optional):</label>
+                        <input type="email" id="farmer-email">
+                    </div>
+                    <div class="form-group">
+                        <label for="farmer-address">Address:</label>
+                        <textarea id="farmer-address" rows="3"></textarea>
+                    </div>
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-secondary" id="cancel-farmer">Cancel</button>
+                        <button type="submit" class="btn btn-primary">Save Farmer</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- SMS Preview Modal -->
+    <div class="modal" id="sms-preview-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>SMS Preview</h3>
+                <button class="modal-close" id="sms-preview-close">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="preview-content">
+                    <div class="preview-phone">
+                        <div class="phone-header">
+                            <div class="signal-bars">
+                                <span></span>
+                                <span></span>
+                                <span></span>
+                                <span></span>
+                            </div>
+                            <span class="carrier">Market Analyzer</span>
+                            <span class="time">12:30 PM</span>
+                        </div>
+                        <div class="message-bubble">
+                            <p id="preview-message-text">Your message will appear here...</p>
+                            <span class="message-time">Now</span>
+                        </div>
+                    </div>
+                    <div class="preview-stats">
+                        <div class="stat-item">
+                            <span class="label">Recipients:</span>
+                            <span class="value" id="preview-recipients">0</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="label">Message Length:</span>
+                            <span class="value" id="preview-length">0 characters</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="label">SMS Count:</span>
+                            <span class="value" id="preview-sms-count">1 SMS</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="label">Estimated Cost:</span>
+                            <span class="value" id="preview-cost">₹0.00</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="preview-actions">
+                    <button class="btn btn-secondary" id="edit-message">Edit Message</button>
+                    <button class="btn btn-primary" id="confirm-send">Send SMS</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Import Farmers Modal -->
+    <div class="modal" id="import-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Import Farmers</h3>
+                <button class="btn-close" id="close-import-modal" aria-label="Close modal">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <!-- File Upload Section -->
+                <div class="import-section">
+                    <h4><i class="fas fa-file-upload"></i> Select File</h4>
+                    <div class="file-upload-area" id="file-upload-area">
+                        <i class="fas fa-cloud-upload-alt" style="font-size: 48px;"></i>
+                        <p><strong>Drop your CSV file here or click to browse</strong></p>
+                        <p>Supported format: CSV files only</p>
+                        <input type="file" id="csv-file-input" accept=".csv" style="display: none;">
+                    </div>
+                    
+                    <!-- Sample CSV Link -->
+                    <div style="text-align: center; margin: 15px 0;">
+                        <button class="btn btn-info btn-sm" id="download-sample-csv">
+                            <i class="fas fa-download"></i> Download Sample CSV
+                        </button>
+                    </div>
+                </div>
+
+                <!-- File Preview Section -->
+                <div class="import-section" id="file-preview-section" style="display: none;">
+                    <h4><i class="fas fa-eye"></i> File Preview</h4>
+                    <div class="file-preview" id="file-preview">
+                        <!-- File preview content will be inserted here -->
+                    </div>
+                </div>
+
+                <!-- Import Options Section -->
+                <div class="import-section" id="import-options-section" style="display: none;">
+                    <h4><i class="fas fa-cog"></i> Import Options</h4>
+                    <div class="import-options">
+                        <label>
+                            <input type="checkbox" id="skip-duplicates" checked>
+                            Skip duplicate phone numbers
+                        </label>
+                        <label>
+                            <input type="checkbox" id="update-existing">
+                            Update existing farmers with new information
+                        </label>
+                        <label>
+                            <input type="checkbox" id="validate-phone">
+                            Validate phone number format
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Progress Section -->
+                <div class="import-section" id="progress-section" style="display: none;">
+                    <h4><i class="fas fa-spinner fa-spin"></i> Import Progress</h4>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progress-fill"></div>
+                    </div>
+                    <p id="progress-text">Preparing import...</p>
+                </div>
+            </div>
+            
+            <div class="modal-actions">
+                <button class="btn btn-secondary" id="cancel-import">Cancel</button>
+                <button class="btn btn-primary" id="start-import" disabled>
+                    <i class="fas fa-upload"></i> Import Farmers
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/clean-data.js"></script>
+    <script src="js/simple-sms-handler.js"></script>
+    <script src="js/admin.js"></script>
+    <script src="js/common.js"></script>
+</body>
+</html>

@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Sample Coimbatore Data</title>
+</head>
+<body>
+    <h1>Add Sample Coimbatore Data</h1>
+    <button id="add-data-btn">Add Coimbatore Price Data</button>
+    <div id="status"></div>
+
+    <script>
+        document.getElementById('add-data-btn').addEventListener('click', async function() {
+            const statusDiv = document.getElementById('status');
+            statusDiv.innerHTML = '<p>Adding data...</p>';
+            
+            const coimbatoreData = [
+                {product_name: 'Tomato', price: 40, unit: 'kg', market_name: 'Coimbatore Central Market', location: 'Coimbatore'},
+                {product_name: 'Onion', price: 30, unit: 'kg', market_name: 'Coimbatore Vegetable Market', location: 'Coimbatore'},
+                {product_name: 'Potato', price: 25, unit: 'kg', market_name: 'Coimbatore Central Market', location: 'Coimbatore'},
+                {product_name: 'Carrot', price: 35, unit: 'kg', market_name: 'Coimbatore Farmers Market', location: 'Coimbatore'},
+                {product_name: 'Cabbage', price: 20, unit: 'kg', market_name: 'Coimbatore Central Market', location: 'Coimbatore'},
+                {product_name: 'Beans', price: 50, unit: 'kg', market_name: 'Coimbatore Vegetable Market', location: 'Coimbatore'},
+                {product_name: 'Apple', price: 120, unit: 'kg', market_name: 'Coimbatore Fruit Market', location: 'Coimbatore'},
+                {product_name: 'Banana', price: 40, unit: 'kg', market_name: 'Coimbatore Farmers Market', location: 'Coimbatore'},
+                {product_name: 'Mango', price: 80, unit: 'kg', market_name: 'Coimbatore Fruit Market', location: 'Coimbatore'},
+                {product_name: 'Orange', price: 60, unit: 'kg', market_name: 'Coimbatore Central Market', location: 'Coimbatore'}
+            ];
+            
+            let results = [];
+            
+            for (const item of coimbatoreData) {
+                try {
+                    const response = await fetch('/api/endpoints/prices.php', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(item)
+                    });
+                    
+                    const result = await response.json();
+                    if (result.success) {
+                        results.push(`✓ Added: ${item.product_name} - ₹${item.price}/${item.unit}`);
+                    } else {
+                        results.push(`✗ Failed: ${item.product_name} - ${result.message}`);
+                    }
+                } catch (error) {
+                    results.push(`✗ Error adding ${item.product_name}: ${error.message}`);
+                }
+            }
+            
+            statusDiv.innerHTML = '<h3>Results:</h3><ul>' + 
+                results.map(r => `<li>${r}</li>`).join('') + 
+                '</ul>';
+        });
+    </script>
+</body>
+</html>

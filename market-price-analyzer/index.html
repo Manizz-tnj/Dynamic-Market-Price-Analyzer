@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Market Price Analyzer - Dashboard</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/compatibility.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Browser compatibility polyfills -->
+    <script src="js/polyfills.js"></script>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <i class="fas fa-chart-line"></i>
+                <span>Market Analyzer</span>
+            </div>
+            <ul class="nav-menu">
+                <li><a href="index.html" class="nav-link active">Dashboard</a></li>
+                <li><a href="map.html" class="nav-link">Market Map</a></li>
+                <li><a href="predictions.html" class="nav-link">Price Predictions</a></li>
+                <li><a href="admin.html" class="nav-link">Admin Panel</a></li>
+            </ul>
+            <div class="hamburger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Header Section -->
+        <section class="header-section">
+            <div class="container">
+                <h1 class="page-title">Market Price Dashboard</h1>
+                <p class="page-subtitle">Real-time prices for vegetables and fruits</p>
+                
+                <!-- Market Stats -->
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-carrot"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="total-vegetables">0</h3>
+                            <p>Vegetables</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-apple-alt"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="total-fruits">0</h3>
+                            <p>Fruits</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-chart-trending-up"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="price-updates">0</h3>
+                            <p>Price Updates Today</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Filters Section -->
+        <section class="filters-section">
+            <div class="container">
+                <div class="filters-container">
+                    <div class="filter-group">
+                        <label for="category-filter">Category:</label>
+                        <select id="category-filter" class="filter-select">
+                            <option value="all">All Categories</option>
+                            <option value="vegetables">Vegetables</option>
+                            <option value="fruits">Fruits</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label for="location-filter">Location:</label>
+                        <select id="location-filter" class="filter-select">
+                            <option value="all">All Locations</option>
+                            <!-- Locations will be dynamically populated -->
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label for="search-input">Search:</label>
+                        <div class="search-container">
+                            <input type="text" id="search-input" placeholder="Search products..." class="search-input">
+                            <i class="fas fa-search search-icon"></i>
+                        </div>
+                    </div>
+                    <div class="filter-group">
+                        <label for="sort-filter">Sort by:</label>
+                        <select id="sort-filter" class="filter-select">
+                            <option value="name">Name (A-Z)</option>
+                            <option value="price-low">Price (Low to High)</option>
+                            <option value="price-high">Price (High to Low)</option>
+                            <option value="change">Price Change</option>
+                            <option value="date">Date Updated</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Products Grid -->
+        <section class="products-section">
+            <div class="container">
+                <div class="products-grid" id="products-grid">
+                    <!-- Products will be dynamically loaded here -->
+                </div>
+                
+                <!-- Loading Spinner -->
+                <div class="loading-spinner" id="loading-spinner">
+                    <div class="spinner"></div>
+                    <p>Loading market data...</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Quick Actions -->
+        <section class="quick-actions">
+            <div class="container">
+                <h2 class="section-title">Quick Actions</h2>
+                <div class="actions-grid">
+                    <a href="map.html" class="action-card">
+                        <i class="fas fa-map-marked-alt"></i>
+                        <h3>Find Markets</h3>
+                        <p>Locate nearby markets on the map</p>
+                    </a>
+                    <a href="predictions.html" class="action-card">
+                        <i class="fas fa-crystal-ball"></i>
+                        <h3>Price Predictions</h3>
+                        <p>View future price forecasts</p>
+                    </a>
+                    <a href="admin.html" class="action-card">
+                        <i class="fas fa-cogs"></i>
+                        <h3>Admin Panel</h3>
+                        <p>Manage farmers and send messages</p>
+                    </a>
+                    <div class="action-card" onclick="exportData()">
+                        <i class="fas fa-download"></i>
+                        <h3>Export Data</h3>
+                        <p>Download price data as CSV</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2025 Market Price Analyzer. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="js/dashboard.js"></script>
+    <script src="js/common.js"></script>
+</body>
+</html>

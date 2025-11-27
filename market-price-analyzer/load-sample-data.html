@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Database Management</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+        .redirect-info {
+            padding: 20px;
+            background: #e3f2fd;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+        .btn {
+            display: inline-block;
+            padding: 12px 24px;
+            background: #2196F3;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            margin: 10px;
+            font-weight: 600;
+        }
+        .btn:hover {
+            background: #1976D2;
+        }
+        .section {
+            margin-bottom: 30px;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+        }
+        .btn {
+            background: #4caf50;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+            font-size: 14px;
+        }
+        .btn:hover {
+            background: #45a049;
+        }
+        .btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+        .status {
+            margin-top: 10px;
+            padding: 10px;
+            border-radius: 5px;
+        }
+        .success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🗄️ Database Management</h1>
+        <div class="redirect-info">
+            <h2>No Sample Data Available</h2>
+            <p>This application now works exclusively with real database data. Sample data has been removed to ensure clean, production-ready functionality.</p>
+        </div>
+        
+        <h3>🎯 What to do next:</h3>
+        <div style="text-align: left; margin: 20px 0;">
+            <p><strong>1. Add Real Data:</strong> Use the admin panel to add farmers, products, and prices manually</p>
+            <p><strong>2. Import Your Data:</strong> Upload your own CSV files through the data upload interface</p>
+            <p><strong>3. Test Database:</strong> Verify your MySQL connection is working properly</p>
+        </div>
+        
+        <div style="margin: 30px 0;">
+            <a href="admin.html" class="btn">🏗️ Open Admin Panel</a>
+            <a href="data-upload.html" class="btn">📤 Upload Your Data</a>
+            <a href="api/test-connection.php" class="btn">🔍 Test Database</a>
+        </div>
+        
+        <div style="margin: 20px 0; padding: 15px; background: #fff3cd; border-radius: 8px; color: #856404;">
+            <strong>Note:</strong> Your database tables are ready. Start by adding farmers and products through the admin interface.
+        </div>
+    </div>
+    
+    <script>
+        // Simple redirect functionality for better UX
+        setTimeout(function() {
+            if (confirm('Would you like to go to the Admin Panel to start adding data?')) {
+                window.location.href = 'admin.html';
+            }
+        }, 5000);
+    </script>
+</body>
+</html>
+    </div>
+
+    <script>
+        async function loadData(type) {
+            const btn = document.getElementById(`${type}-btn`);
+            const status = document.getElementById(`${type}-status`);
+            
+            btn.disabled = true;
+            btn.textContent = 'Loading...';
+            status.innerHTML = '<div class="info">Loading data...</div>';
+            
+            try {
+                // First, fetch the CSV file
+                const csvResponse = await fetch(`data/sample_${type}.csv`);
+                if (!csvResponse.ok) {
+                    throw new Error(`Failed to load CSV file: ${csvResponse.status}`);
+                }
+                const csvText = await csvResponse.text();
+                
+                // Create a blob and form data
+                const blob = new Blob([csvText], { type: 'text/csv' });
+                const formData = new FormData();
+                formData.append('file', blob, `sample_${type}.csv`);
+                formData.append('type', type);
+                
+                // Upload to the API
+                const response = await fetch('api/endpoints/upload-data.php', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    status.innerHTML = `<div class="success">✓ Successfully loaded ${result.processed} ${type} records</div>`;
+                } else {
+                    throw new Error(result.error || 'Upload failed');
+                }
+                
+            } catch (error) {
+                console.error(`Error loading ${type}:`, error);
+                status.innerHTML = `<div class="error">✗ Error: ${error.message}</div>`;
+            } finally {
+                btn.disabled = false;
+                btn.textContent = `Load ${type.charAt(0).toUpperCase() + type.slice(1)}`;
+            }
+        }
+        
+        async function loadAllData() {
+            const btn = document.getElementById('all-btn');
+            const status = document.getElementById('all-status');
+            
+            btn.disabled = true;
+            btn.textContent = 'Loading All Data...';
+            status.innerHTML = '<div class="info">Loading all sample data...</div>';
+            
+            const types = ['farmers', 'products', 'markets', 'prices'];
+            let totalProcessed = 0;
+            let errors = [];
+            
+            for (const type of types) {
+                try {
+                    status.innerHTML = `<div class="info">Loading ${type}...</div>`;
+                    
+                    // Load each type
+                    const csvResponse = await fetch(`data/sample_${type}.csv`);
+                    if (!csvResponse.ok) {
+                        throw new Error(`Failed to load ${type} CSV`);
+                    }
+                    const csvText = await csvResponse.text();
+                    
+                    const blob = new Blob([csvText], { type: 'text/csv' });
+                    const formData = new FormData();
+                    formData.append('file', blob, `sample_${type}.csv`);
+                    formData.append('type', type);
+                    
+                    const response = await fetch('api/endpoints/upload-data.php', {
+                        method: 'POST',
+                        body: formData
+                    });
+                    
+                    const result = await response.json();
+                    
+                    if (result.success) {
+                        totalProcessed += result.processed;
+                    } else {
+                        errors.push(`${type}: ${result.error}`);
+                    }
+                    
+                } catch (error) {
+                    errors.push(`${type}: ${error.message}`);
+                }
+            }
+            
+            if (errors.length === 0) {
+                status.innerHTML = `<div class="success">✓ Successfully loaded ${totalProcessed} total records!</div>`;
+            } else {
+                status.innerHTML = `
+                    <div class="error">✗ Some errors occurred:<br>
+                    ${errors.join('<br>')}</div>
+                `;
+            }
+            
+            btn.disabled = false;
+            btn.textContent = 'Load All Sample Data';
+        }
+        
+        async function testDatabase() {
+            const status = document.getElementById('test-status');
+            status.innerHTML = '<div class="info">Testing database connection...</div>';
+            
+            try {
+                const response = await fetch('api/endpoints/test-db.php');
+                const result = await response.json();
+                
+                if (result.success) {
+                    status.innerHTML = `<div class="success">✓ Database connection successful!</div>`;
+                } else {
+                    throw new Error(result.error || 'Database test failed');
+                }
+            } catch (error) {
+                status.innerHTML = `<div class="error">✗ Database error: ${error.message}</div>`;
+            }
+        }
+        
+        // Auto-test database on page load
+        window.onload = function() {
+            testDatabase();
+        };
+    </script>
+</body>
+</html>
